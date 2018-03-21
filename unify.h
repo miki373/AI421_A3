@@ -28,11 +28,13 @@ public:
 	void removeSpaces(string&);
 
 
+	side * search(string, side *);
 	void unify();
+	side * rootNode;
 
 private:
 	string command;
-	side * rootNode;
+	
 	int error;
 
 };

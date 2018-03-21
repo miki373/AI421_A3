@@ -185,6 +185,8 @@ void Unify::makeTreeHelper(side * node)
 		// INIT SOTRAGE
 		node->functioName = getFuctionName(temp);
 
+		node->term = "";
+
 		node->isFunction = true;
 
 		node->isConst = false;
@@ -200,21 +202,46 @@ void Unify::makeTreeHelper(side * node)
 		
 		string rightside = temp.substr(middle + 1);
 
-		side * newleft = new side;
+		// search if variable / constant already in tree
+
+		side * foundLeft = search(leftside, rootNode);
+
+		side * foundRight = search(rightside, rootNode);
+
+		if (foundLeft != nullptr)
+		{
+			node->left = foundLeft;
+		}
+		else
+		{
+			side * newleft = new side;
+			newleft->left = nullptr;
+			newleft->right = nullptr;
+			newleft->rawString = leftside;
+			node->left = newleft;
+			makeTreeHelper(newleft);
+		}
+
+
+
+		if (foundRight != nullptr)
+		{
+			node->left = foundRight;
+		}
+		else
+		{
+			side * newright = new side;
+			newright->left = nullptr;
+			newright->right = nullptr;
+			newright->rawString = rightside;
+			node->right = newright;
+			makeTreeHelper(newright);
+		}
+
 		
-		side * newright = new side;
-
-		newleft->rawString = leftside;
 		
-		newright->rawString = rightside;
 
-		node->left = newleft;
-
-		node->right = newright;
-
-		makeTreeHelper(newleft);
-
-		makeTreeHelper(newright);
+		
 
 		// END PARSE
 
@@ -229,6 +256,10 @@ void Unify::makeTreeHelper(side * node)
 
 		node->term = temp;
 
+		node->left = nullptr;
+
+		node->right = nullptr;
+
 		return;
 	}
 	else if (isConst(temp))
@@ -240,6 +271,10 @@ void Unify::makeTreeHelper(side * node)
 		node->isFunction = false;
 
 		node->term = temp;
+
+		node->left = nullptr;
+
+		node->right = nullptr;
 
 		return;
 	}
@@ -351,4 +386,39 @@ void Unify::unify()
 	{
 		// do something
 	}
+}
+
+
+// Search tree for target
+side * Unify::search(string target, side * node)
+{
+	if (node->term == target)
+	{
+		return node;
+	}
+	side * found = nullptr;
+	
+	if (node->left != nullptr)
+	{
+		found = search(target, node->left);
+	}
+	else
+	{
+		if (node->right != nullptr)
+		{
+			found = search(target, node->right);
+		}
+	}
+	
+	if (found != nullptr)
+	{
+		return found;
+	}
+	else
+	{
+		return nullptr;
+	}
+	
+	
+	
 }
