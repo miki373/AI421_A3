@@ -180,8 +180,7 @@ void Unify::makeTreeHelper(side * node)
 	
 	if (isFunction(temp))
 	{
-		int middle;
-
+		
 		// INIT SOTRAGE
 		node->functioName = getFuctionName(temp);
 
@@ -192,56 +191,40 @@ void Unify::makeTreeHelper(side * node)
 		node->isConst = false;
 
 		node->isVar = false;
+
+		vector<string> tokens;
+
+		tokens = splitIndideFunction(temp);
+
+		node->arity = tokens.size();
 		// END INIT
 
 
-		// BEGIN PARSE
-		middle = findMiddle(temp);
+
 		
-		string leftside = temp.substr(0, middle);
-		
-		string rightside = temp.substr(middle + 1);
 
-		// search if variable / constant already in tree
+		side * searchRes;
 
-		side * foundLeft = search(leftside, rootNode);
-
-		side * foundRight = search(rightside, rootNode);
-
-		if (foundLeft != nullptr)
+		for (unsigned int i = 0; i < tokens.size(); i++)
 		{
-			node->left = foundLeft;
-		}
-		else
-		{
-			side * newleft = new side;
-			newleft->left = nullptr;
-			newleft->right = nullptr;
-			newleft->rawString = leftside;
-			node->left = newleft;
-			makeTreeHelper(newleft);
+			searchRes = search2(tokens[i], rootNode);
+			if (searchRes == nullptr)
+			{
+				cout <<"\nParent: " << node->rawString << "Token: " << tokens[i] << endl;
+				side * newChild = new side;
+				newChild->rawString = tokens[i];
+				node->children.push_back(newChild);
+				makeTreeHelper(newChild);
+			}
+			else
+			{
+				cout << "FOUND BY SEARCH: " << searchRes->rawString;
+				node->children.push_back(searchRes);
+			}
 		}
 
 
 
-		if (foundRight != nullptr)
-		{
-			node->left = foundRight;
-		}
-		else
-		{
-			side * newright = new side;
-			newright->left = nullptr;
-			newright->right = nullptr;
-			newright->rawString = rightside;
-			node->right = newright;
-			makeTreeHelper(newright);
-		}
-
-		
-		
-
-		
 
 		// END PARSE
 
@@ -421,4 +404,72 @@ side * Unify::search(string target, side * node)
 	
 	
 	
+}
+
+vector<string> Unify::splitIndideFunction(string function)
+{
+	
+	unsigned int lastComma = 0;
+	int opening = 0, closing = 0;
+	vector<string> tokens;
+	string tempToken;
+	for (unsigned int i = 0; i < function.size(); i++)
+	{
+		
+		if (function[i] == '(')
+		{
+			opening++;
+		}
+		if (function[i] == ')')
+		{
+			closing++;
+		}
+		if (function[i] == ',')
+		{
+			if ((opening - closing) == 0)
+			{
+				
+				tempToken = function.substr(lastComma, (i - lastComma));
+				if (tempToken[0] == ',')
+				{
+					tempToken.erase(0, 1);
+				}
+		
+				tokens.push_back(tempToken);
+				lastComma = i;
+			}
+		}
+		
+	}
+	// last 
+	
+	tempToken = function.substr(lastComma);
+	if (tempToken[0] == ',')
+	{
+		tempToken.erase(0, 1);
+	}
+	tokens.push_back(tempToken);
+
+	return tokens;
+
+}
+
+
+side * Unify::search2(string target, side * node)
+{
+	if (node->term == target)
+	{
+		return node;
+	}
+	side * found = nullptr;
+
+	for (unsigned int i = 0; i < node->children.size(); i++)
+	{
+		found = search2(target, node->children[i]);
+		if (found != nullptr)
+		{
+			return found;
+		}
+	}
+	return found;
 }

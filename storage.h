@@ -1,7 +1,7 @@
 #ifndef __STORAGE_H__
 #define __STORAGE_H__
 #include <string>
-
+#include <vector>
 
 struct side
 {
@@ -14,6 +14,9 @@ struct side
 	side * unifiedWith;
 	side * left;
 	side * right;
+	std::vector<side*> children;
+	int arity;
+	
 };
 
 

@@ -4,6 +4,7 @@
 #include <string>
 #include <stdio.h>
 #include <stack>
+#include <cmath>
 #include "storage.h"
 using namespace std;
 
@@ -27,8 +28,9 @@ public:
 	bool isVar(string);
 	void removeSpaces(string&);
 
-
+	vector<string> splitIndideFunction(string);
 	side * search(string, side *);
+	side * search2(string, side *);
 	void unify();
 	side * rootNode;
 

@@ -7,13 +7,15 @@ int main()
 	Unify command;
 	
 
+
+
 	
 	command.getInput();
 	string comm =  command.printcommand();
 	cout << comm << endl;
 	command.makeTree();
 	side * root = command.rootNode;
-	side * found = command.search("a", root);
+	side * found = command.search2("a", root);
 	if (found == nullptr)
 	{
 		cout << "NO WORK";
@@ -23,7 +25,8 @@ int main()
 		cout << "WORK" << found->rawString << endl;
 		
 	}
-
+	
+	
 
 	
 }
